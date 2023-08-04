@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>VoodooShop</title>
+	<link rel="stylesheet" href="./css/styles.css">
+	<link rel="icon" type="image/x-icon" href="/src/img/icons/Logomark45px.svg">
+</head>
+	<body >  
+		<header class="bg-light-sand py-12 px-[62px]">
+			<div class="flex justify-between items-start">
+				<div class="flex justify-between items-start space-x-3">
+					<img src="img/icons/Logomark45px.svg" alt="Logo">
+					<img src="img/icons/VooDooTest.svg" alt="LogoTest">
+				</div>
+				<div class="flex space-x-[48px]">
+					<button id="shoppingCartBtn">
+						<img src="img/icons/shopping-cart (1) 1.svg" alt="shoppingCart">
+					</button>
+					<button class="bg-black text-center text-white font-SpaceGrotesk font-bold px-3 rounded text-[20px] leading-[26px] w-[101px] h-[38px] ">
+						Sign-up
+					</button>
+				</div>
+		</header>
+
+		<main class="relative">
+			<section class="bg-light-sand px-[120px] pt-[52px] pb-[196px] border-y border-black">
+				<div class="flex justify-between p-[24px] bg-black text-white my-[48px]">
+					<div class="flex items-center">
+						<div class="flex w-[80px]">
+							<img src="/src/img/icons/alert-circle.svg" alt="alert">
+							<H2 class="font-bold ml-[6px]">ALPHA</H2>
+							</div>
+							<p class="text-[14px] font-medium ml-[48px]">Important info regarding our service</p>
+						</div>
+						<button>
+							<img src="/src/img/icons/chevron-down.svg" alt="chevron-down">
+						</button>
+				</div>
+
+				<div id="itemList" class="grid grid-cols-4 gap-x-[24px] gap-y-[48px] min-h-[2712px]">
+				</div> 
+
+				
+				<div id="pages" class="mt-[70px] flex items-center justify-center gap-[10px]">
+				</div>
+
+			</section>
+		
+			<section id="shoppingCartMenu" class="w-[445px] bg-[#1E1E1E] fixed top-0 right-0 h-[100vh] pt-[49px] pl-[37px] pr-[44px] hidden">
+
+				<div class="flex justify-between items-center">
+					<H2 class="font-SpaceGrotesk text-[#FCF7E6] font-bold text-[24px] leading-[24px]">Shopping Cart</H2>
+					<button id="closeShoppingCartBtn">
+						<img src="/src/img/icons/Vector.svg" alt="cross">
+					</button>
+				</div>
+				<hr class="border-[#FCF7E6] border mt-[22px] mb-[13px]">
+
+				<div id="cartList" >
+
+				</div>
+
+				<hr class="border-[#FCF7E6] border mt-[32px]">	
+				<div class="flex justify-between items-center mt-[35px] font-SpaceGrotesk text-[#FCF7E6] font-bold text-[14px] leading-[16px]">
+					<p>Total</p>
+					<div class="flex justify-end">
+						<p id="totalCost">5000</p>
+						<p class="ml-1">KR.</p>
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<footer>
+			<div class="grid grid-cols-4 bg-white py-[84px] px-[120px] text-[14px] font-bold leading-[14px] font-SpaceMono" >
+				<div class="w-[302px] h-[96px] px-[110px] flex justify-center items-center ">
+					<img class="max-w-[82px]" src="img/icons/Logomark82px.svg" alt="BigLogo">
+				</div>
+				<div class="w-[300px]">
+					<ul class="flex flex-col gap-[19px]">
+						<li><a href="#">FAQ</a></li>
+						<li><a href="#">RETURNS</a></li>
+						<li><a href="#">CONTACT</a></li>
+					</ul>
+				</div>
+				<div class="w-[300px]">
+					<ul class="flex flex-col gap-[19px]">
+						<li><a href="#">TERMS & CONDITIONS</a></li>
+						<li><a href="#">PRIVACY POLICY</a></li>
+						<li><a href="#">COOKIE POLICY</a></li>
+						<li><a href="#">COOKIE SETTINGS</a></li>
+					</ul>
+				</div>
+				<div class="font-SpaceGrotesk w-[300px]">
+					<ul class="flex flex-col gap-[19px]">
+						<li><a href="#">ABOUT SECOND CHANCE</a></li>
+						<li><a href="#">CAREER</a></li>
+						<li><a href="#">FACEBOOK</a></li>
+						<li><a href="#">INSTAGRAM</a></li>
+					</ul>
+				</div>
+			</div>
+		</footer>
+
+		<script src="./js/script.js"></script>
+	</body>
+</html>
