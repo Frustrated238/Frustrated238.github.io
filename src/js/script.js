@@ -15,9 +15,11 @@ async function fetchData(url, page = 1) {
 const limit = 24;
 let lastPage = 20;
 let page =  localStorage.getItem("currentPage") ? localStorage.getItem("currentPage") : 1;
-localStorage.setItem("currentStoreItems", []);
-cartItems = [];
+localStorage.getItem("currentStoreItems") ? localStorage.getItem("currentStoreItems") : [];
+localStorage.getItem("shopingCart") ? localStorage.getItem("shopingCart") : [];
 
+// localStorage.setItem("currentStoreItems", []);
+localStorage.setItem("shopingCart", JSON.stringify([]));
 const apiUrl = `https://voodoo-sandbox.myshopify.com/products.json?limit=${limit}&page=`;
 let imgSrc = 'http://logos-download.com/wp-content/uploads/2016/10/Shopify_logo_icon.png'
 
@@ -44,8 +46,7 @@ function appendItemsToList(items) {
 			</div>`
 		wrapper.append(newItem);
 		const cartButton  =  document.getElementById(item.id);
-		cartButton.addEventListener('click', addToCart);
-		// console.log(cartButton);
+		cartButton.addEventListener('click', addToCart(item.id));
 	});
 }
 
@@ -98,7 +99,6 @@ function handleButtonClick(event) {
 			button.classList.remove('bg-black','text-white');
 		}
 	});
-	console.log(allButtons);
 
 	contentList.innerHTML = '';
 	fetchData(apiUrl, currentButtonValue)
@@ -130,42 +130,45 @@ function handleShoppingCart() {
 
 //Add items to cart 
 
-function addToCart(event) {
-	console.log(event.target.id);
-	let localStoreItems = JSON.parse(localStorage.getItem('currentStoreItems'));
-	cartItems = JSON.parse(localStorage.getItem('shopingCart'));	
-	localStoreItems.forEach((item) => {
-		if(item.id == event.target.id && !(cartItems.some(obj => obj.id == event.target.id))) {
-			cartItems.push(item);
-			localStorage.setItem('shopingCart',JSON.stringify(cartItems));
-		}
-	})
-	let store = document.querySelector('#cartList');
-	store.innerHTML = '';
-	appendItemsToCart(JSON.parse(localStorage.getItem('shopingCart')));
+function addToCart(itemId) {
+	return function(event) {
+		let allPageItems = JSON.parse(localStorage.getItem('currentStoreItems'));
+		let cartItems = JSON.parse(localStorage.getItem('shopingCart'));
+		allPageItems.forEach((item) => {
+			if(item.id == itemId && !(cartItems.some(obj => obj.id == itemId))) {
+				item.amount = 1;
+				cartItems.push(item);
+				localStorage.setItem('shopingCart',JSON.stringify(cartItems));
+			}
+		})
+		let store = document.querySelector('#cartList');
+		store.innerHTML = '';
+		appendItemsToCart(cartItems);
+	}
 }
 
 // Delete from Cart 
-function deleteFromCart(event) {
-	console.log(event.currentTarget);
-	let localStoreItems = JSON.parse(localStorage.getItem('shopingCart'));
-	const index = localStoreItems.findIndex(item => item.title === event.currentTarget.id);
-	if (index !== -1) {
-		localStoreItems.splice(index, 1);
+function deleteFromCart(itemId) {
+	return function(event) {
+		let cartItems = JSON.parse(localStorage.getItem('shopingCart'));
+		const index = cartItems.findIndex(item => item.id === itemId);
+		if (index !== -1) {
+			cartItems.splice(index, 1);
+		}
+		localStorage.setItem('shopingCart',JSON.stringify(cartItems));
+		let store = document.querySelector('#cartList');
+		store.innerHTML = '';
+		appendItemsToCart(cartItems);
 	}
-	localStorage.setItem('shopingCart',JSON.stringify(localStoreItems));
-
-	let store = document.querySelector('#cartList');
-	store.innerHTML = '';
-	appendItemsToCart(localStoreItems);
 }
 
 // Render items in cart
 function appendItemsToCart(items) {
 	let wrapper = document.querySelector('#cartList');
+	wrapper.innerHTML = '';
 	let totalCostNum = 0;
+	let amountBlockId = 0;
 	items.forEach((item) => {
-		let itemID = 1;
 		let newItemCart = document.createElement('div');
 		newItemCart.innerHTML = `
 		<div id="cartItem" class="flex mt-[40px] text-[#FCF7E6] font-bold text-[14px] relative">
@@ -173,9 +176,9 @@ function appendItemsToCart(items) {
 			<div class="ml-[18px] max-w-[196px] flex flex-col justify-between">
 				<p>${item.title.split(' ').slice(0, 4).join(' ')}</p>
 				<p>${item.variants[0].price} KR.</p>
-				<div class="flex w-[60px] justify-between">
+				<div id=${amountBlockId} class="flex w-[60px] justify-between">
 					<button id="minusBtn">-</button>
-					<p id="${itemID}"> </p>
+					<p>${item.amount}</p>
 					<button id="plusBtn">+</button>
 				</div>
 			</div>
@@ -186,15 +189,39 @@ function appendItemsToCart(items) {
 		`;
 		wrapper.append(newItemCart);
 		const deleteBtn  =  document.getElementById(item.title);
-		deleteBtn.addEventListener('click', deleteFromCart);
-		totalCostNum += +item.variants[0].price;
-
-
+		const amountBlock = document.getElementById(amountBlockId++);
+		deleteBtn.addEventListener('click', deleteFromCart(item.id));
+		amountBlock.addEventListener('click', handleAmountChange(item.id));
+		totalCostNum += +item.variants[0].price * item.amount;
 	});
 	const totalCost = document.querySelector('#totalCost');
-	totalCost.textContent = totalCostNum;
+	totalCost.textContent = totalCostNum.toFixed(2);
 }
 
-
-
-
+function handleAmountChange(itemId) {
+	return function(event) {
+		let button = event.target.id;
+		let cartItems = JSON.parse(localStorage.getItem('shopingCart'));
+		JSON.parse(localStorage.getItem('shopingCart')).forEach((item) => {
+			if(item.id == itemId) {
+				if(button == 'plusBtn') {
+					item.amount += 1;
+					cartItems.push(item);
+					const index = cartItems.findIndex(item => item.id === itemId);
+					if (index !== -1) {
+						cartItems.splice(index, 1);
+					}
+				} else if (button == 'minusBtn' && item.amount > 1) {
+					item.amount -= 1;
+					cartItems.push(item);
+					const index = cartItems.findIndex(item => item.id === itemId);
+					if (index !== -1) {
+						cartItems.splice(index, 1);
+					}
+				}
+				localStorage.setItem('shopingCart',JSON.stringify(cartItems));
+			}
+			appendItemsToCart(cartItems);
+		});		
+	}
+}
