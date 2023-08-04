@@ -13,15 +13,14 @@ async function fetchData(url, page = 1) {
 }
 
 const limit = 24;
-let lastPage = 20;
-let page =  localStorage.getItem("currentPage") ? localStorage.getItem("currentPage") : 1;
-localStorage.getItem("currentStoreItems") ? localStorage.getItem("currentStoreItems") : [];
-localStorage.getItem("shopingCart") ? localStorage.getItem("shopingCart") : [];
+let totalPages  = 20;
+let currentPage  =  1;
 
 // localStorage.setItem("currentStoreItems", []);
 localStorage.setItem("shopingCart", JSON.stringify([]));
 const apiUrl = `https://voodoo-sandbox.myshopify.com/products.json?limit=${limit}&page=`;
 let imgSrc = 'http://logos-download.com/wp-content/uploads/2016/10/Shopify_logo_icon.png'
+
 
 function appendItemsToList(items) {
 	let wrapper = document.querySelector('#itemList');
@@ -50,46 +49,61 @@ function appendItemsToList(items) {
 	});
 }
 
-function createPagesBlock(currentPage, lastPage){
-	let pages = document.querySelector('#pages');
-	pages.innerHTML = '';
+function renderPaginationBtns(){
+	let pagesWrapper = document.querySelector('#pages');
+	pagesWrapper.innerHTML = '';
 
-  	for (let btn = 1; btn <= 7; btn++) {
-    	const button = document.createElement('button');
-		if(btn == 6) {
-			button.textContent = '...';
-		} else if (btn == 7) {
-			button.textContent = lastPage;
-		} else button.textContent = btn;
-		if(button.textContent == currentPage) {
-			button.classList = 'border border-black rounded-[100%] w-[39px] h-[39px] flex justify-center items-center text-[18px] font-Inter leading-[18px] text-white bg-black'
-		} else {
-			button.classList = 'border border-black rounded-[100%] w-[39px] h-[39px] flex justify-center items-center text-[18px] font-Inter leading-[18px]';
-		}
-		pages.appendChild(button);
-  	}
+	renderPageButton(1, pagesWrapper);
+
+	if (currentPage > 1) {
+		renderDots(pagesWrapper);
+	}
+	let startPage = Math.max(currentPage - 1, 2);
+  	let endPage = Math.min(currentPage + 1, totalPages - 1);
+
+	for (let page = startPage; page <= endPage; page++) {
+		renderPageButton(page, pagesWrapper);
+	}
+	if (currentPage < totalPages - 4) {
+		renderDots(pagesWrapper);
+	}
+	renderPageButton(totalPages, pagesWrapper);
+
 }
 
+function renderPageButton(page, container) {
+	const button = document.createElement('button');
+	button.classList = 'border border-black rounded-[100%] w-[39px] h-[39px] flex justify-center items-center text-[18px] font-Inter leading-[18px]';
+	button.textContent = page;
+	if (button.textContent == currentPage) {
+		button.classList.add('bg-black','text-white');
+	} else {
+		button.classList.remove('bg-black','text-white');
+	}
+	button.addEventListener('click', () => handlePaginationClick(page));
+	container.appendChild(button);
+}
+
+function renderDots(container) {
+	const dots = document.createElement('span');
+	dots.classList = 'border border-black rounded-[100%] w-[39px] h-[39px] flex justify-center items-center text-[18px] font-Inter leading-[18px]';
+	dots.textContent = '...';
+	container.appendChild(dots);
+}
+renderPaginationBtns();
+
 document.addEventListener('DOMContentLoaded', () => {
-	fetchData(apiUrl, page)
+	fetchData(apiUrl, currentPage)
 	.then((data) => {
 		localStorage.setItem("currentStoreItems", JSON.stringify(data.products));
 		appendItemsToList(data.products);
 	});
-	createPagesBlock(page, lastPage);
 });
-
-
-const pagination = document.querySelector('#pages');
-pagination.addEventListener('click', handleButtonClick);
-
   
-function handleButtonClick(event) {
-	const currentButtonValue = event.target.textContent;
+function handlePaginationClick(page) {
+	const currentButtonValue = page;
 	const allButtons = document.querySelectorAll('#pages button');
 	const contentList = document.querySelector('#itemList');
-	if (!(event.target.tagName.toLowerCase() === 'button') ||  !(/^\d+$/.test(currentButtonValue))) return;
-
 	localStorage.setItem("currentPage", currentButtonValue);
 
 	allButtons.forEach((button) => {
@@ -99,6 +113,7 @@ function handleButtonClick(event) {
 			button.classList.remove('bg-black','text-white');
 		}
 	});
+	
 
 	contentList.innerHTML = '';
 	fetchData(apiUrl, currentButtonValue)
@@ -106,6 +121,9 @@ function handleButtonClick(event) {
 			localStorage.setItem("currentStoreItems", JSON.stringify(data.products));
 			appendItemsToList(data.products);
 		});
+
+	currentPage = page;
+	renderPaginationBtns();
 }
 
 
