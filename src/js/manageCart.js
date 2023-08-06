@@ -71,7 +71,7 @@ function appendItemsToCart(items) {
 				</div>
 			</div>
 			<button id="${item.title}">
-				 <img class="absolute top-0 right-0" src="/src/img/icons/delete-bin-6-line.svg" alt="">
+				 <img class="absolute top-0 right-0" src="img/icons/delete-bin-6-line.svg" alt="">
 			</button>
 		</div>
 		`;

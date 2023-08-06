@@ -60,9 +60,12 @@ export function handlePaginationClick(page) {
   });
 
   contentList.innerHTML = "";
+
   fetchData(currentButtonValue).then((data) => {
     localStorage.setItem("currentStoreItems", JSON.stringify(data.products));
     appendItemsToList(data.products);
+    
+    document.querySelector('header').scrollIntoView({behavior: "smooth"});
   });
 
   currentPage = page;

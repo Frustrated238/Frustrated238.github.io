@@ -2,7 +2,7 @@ import { addToCart } from "./manageCart.js";
 
 export function appendItemsToList(items) {
 	const wrapper = document.querySelector('#itemList');
-	const imgSrc = 'http://logos-download.com/wp-content/uploads/2016/10/Shopify_logo_icon.png';
+	const imgSrc = 'https://logos-download.com/wp-content/uploads/2016/10/Shopify_logo_icon.png';
 	items.forEach((item) => {
 		const newItem = document.createElement('div');
 		newItem.innerHTML = `
